@@ -6,8 +6,6 @@ const weekday = require('dayjs/plugin/weekday');
 dayjs.extend(weekday);
 const temporalRe = /PT(\d{1,2}H)?(\d{1,2}M)?(\d{1,2}S)?/;
 
-// const workspaceId = '639df8772e6cf741bcac9bde';
-// const userId = '6315f0e6ac989c527226410d';
 const apiKey = process.env.API_KEY;
 const apiUrl = 'https://api.clockify.me/api/v1';
 
