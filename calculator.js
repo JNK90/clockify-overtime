@@ -28,22 +28,18 @@ async function calculateOvertimeAsync() {
   const workingHoursPerDay = 6.6;
 
   const totalWorkDays = getTotalWorkingDays(start, end, workingDays);
-  console.log(`Total working days: ${totalWorkDays}`);
   totalWorkDaysOut.innerText = totalWorkDays
 
   const totalTimeToWork = totalWorkDays * workingHoursPerDay;
-  console.log(`Total time to work: ${totalTimeToWork} hours`);
   totalTimeToWorkOut.innerText = totalTimeToWork;
 
   const { userId, workspaceId } = await getUserAndWorkspaceIdAsync();
 
   const clockifyTimes = await getClockifyTimesAsync(start, end, workspaceId, userId);
   const totalHoursWorked = clockifyTimes.reduce((a, b) => a + b, 0);
-  console.log(`Total hours worked: ${totalHoursWorked} hours`);
   totalHoursWorkedOut.innerText = totalHoursWorked;
 
   const overtime = totalHoursWorked - totalTimeToWork;
-  console.log(`Overtime: ${overtime} hours`);
   overtimeOut.innerText = overtime;
 }
 
@@ -63,8 +59,8 @@ async function getClockifyTimesAsync(start, end, workspaceId, userId) {
   let page = 1;
   while (true) {
     const params = new URLSearchParams();
-    params.append("start", start.format('YYYY-MM-DDThh:mm:ssZ'));
-    params.append("end", end.format('YYYY-MM-DDThh:mm:ssZ'));
+    params.append("start", start.add(-1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
+    params.append("end", end.add(1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
     params.append("page", page);
     params.append("page-size", 200);
 
