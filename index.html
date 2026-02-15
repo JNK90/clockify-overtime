@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <title>Clockify Overtime Calculator</title>
+</head>
+
+<body>
+    <div>Hello Calculator</div>
+    <div>
+        <label for="api-key">API-Key</label>
+        <input id="api-key" type="text" />
+    </div>
+    <div>
+        <label for="start">Start</label>
+        <input id="start" type="date" />
+    </div>
+    <div>
+        <label for="end">End</label>
+        <input id="end" type="date" />
+    </div>
+
+    <button id="trigger-btn">calculate overtime</button>
+
+    <div>
+        <label>Total work days:</label>
+        <p id="total-work-days"></p>
+    </div>
+
+    <div>
+        <label>Total time to work:</label>
+        <p id="total-time-to-work"></p>
+    </div>
+
+    <div>
+        <label>Total hours worked:</label>
+        <p id="total-hours-worked"></p>
+    </div>
+
+    <div>
+        <label>Overtime:</label>
+        <p id="overtime"></p>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/weekday.js"></script>
+<script src="calculator.js" type="module"></script>
+
+</html>
