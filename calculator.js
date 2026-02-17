@@ -13,6 +13,15 @@ let apiKey;
 
 const startInput = document.querySelector('#start');
 const endInput = document.querySelector('#end');
+const workingDaysInputs = [
+  document.querySelector('#working-day-mon'),
+  document.querySelector('#working-day-tue'),
+  document.querySelector('#working-day-wed'),
+  document.querySelector('#working-day-thu'),
+  document.querySelector('#working-day-fri'),
+  document.querySelector('#working-day-sat'),
+  document.querySelector('#working-day-sun')];
+const workingHoursPerDayInput = document.querySelector('#working-hours-per-day');
 
 const totalWorkDaysOut = document.querySelector('#total-work-days');
 const totalTimeToWorkOut = document.querySelector('#total-time-to-work');
@@ -20,12 +29,11 @@ const totalHoursWorkedOut = document.querySelector('#total-hours-worked');
 const overtimeOut = document.querySelector('#overtime');
 
 async function calculateOvertimeAsync() {
-  // todo as parameters
   apiKey = apiKeyInput.value;
   const start = dayjs(startInput.value);
   const end = endInput.value ? dayjs(endInput.value) : dayjs();
-  const workingDays = [1, 2, 3, 4, 5];
-  const workingHoursPerDay = 6.6;
+  const workingDays = workingDaysInputs.filter(d => d.checked).map(d => Number.parseInt(d.value));
+  const workingHoursPerDay = workingHoursPerDayInput.value;
 
   const totalWorkDays = getTotalWorkingDays(start, end, workingDays);
   totalWorkDaysOut.innerText = totalWorkDays
