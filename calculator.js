@@ -79,7 +79,7 @@ async function getClockifyTimesAsync(start, end, workspaceId, userId) {
     if (pagedTimes.length === 0) {
       break;
     }
-    times.push(...pagedTimes.map((t) => calculateHours(t.timeInterval.duration)));
+    times.push(...pagedTimes.map((t) => t.timeInterval.duration ? calculateHours(t.timeInterval.duration) : 0));
     page++;
   }
   return times;
