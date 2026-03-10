@@ -13,6 +13,9 @@ let apiKey;
 
 const startInput = document.querySelector('#start');
 const endInput = document.querySelector('#end');
+// preset dropdown (mon-fri / every-day / custom) and container for custom checkboxes
+const presetSelect = document.querySelector('#working-days-preset');
+const customDaysContainer = document.querySelector('#custom-days');
 const workingDaysInputs = [
     document.querySelector('#working-day-mon'),
     document.querySelector('#working-day-tue'),
@@ -23,6 +26,28 @@ const workingDaysInputs = [
     document.querySelector('#working-day-sun'),
 ];
 const workingHoursPerDayInput = document.querySelector('#working-hours-per-day');
+
+// apply selected preset by checking appropriate boxes and toggling visibility
+function applyPreset(preset) {
+    switch (preset) {
+        case 'mon-fri':
+            workingDaysInputs.forEach((inp) => {
+                const v = Number.parseInt(inp.value, 10);
+                inp.checked = v >= 1 && v <= 5;
+            });
+            customDaysContainer.style.display = 'none';
+            break;
+        case 'every-day':
+            workingDaysInputs.forEach((inp) => (inp.checked = true));
+            customDaysContainer.style.display = 'none';
+            break;
+        case 'custom':
+            customDaysContainer.style.display = '';
+            break;
+        default:
+            applyPreset('mon-fri');
+    }
+}
 
 function loadSettings() {
     const today = dayjs();
@@ -40,24 +65,40 @@ function loadSettings() {
     const storedHours = localStorage.getItem('workingHoursPerDay');
     workingHoursPerDayInput.value = storedHours !== null ? storedHours : workingHoursDefault;
 
-    const storedDays = localStorage.getItem('workingDays');
-    const daysToCheck = storedDays ? JSON.parse(storedDays) : defaultWorkingDays;
-    workingDaysInputs.forEach((input) => {
-        const val = Number.parseInt(input.value, 10);
-        input.checked = daysToCheck.includes(val);
-    });
+    // load preset and working days
+    const storedPreset = localStorage.getItem('workingDaysPreset') || 'mon-fri';
+    presetSelect.value = storedPreset;
+
+    if (storedPreset === 'custom') {
+        const storedDays = localStorage.getItem('workingDays');
+        const daysToCheck = storedDays ? JSON.parse(storedDays) : defaultWorkingDays;
+        workingDaysInputs.forEach((input) => {
+            const val = Number.parseInt(input.value, 10);
+            input.checked = daysToCheck.includes(val);
+        });
+        customDaysContainer.style.display = '';
+    } else {
+        applyPreset(storedPreset);
+    }
 }
 
 function saveSettings() {
     localStorage.setItem('start', startInput.value);
     localStorage.setItem('end', endInput.value);
     localStorage.setItem('workingHoursPerDay', workingHoursPerDayInput.value);
+    localStorage.setItem('workingDaysPreset', presetSelect.value);
     const checkedDays = workingDaysInputs.filter((d) => d.checked).map((d) => Number.parseInt(d.value, 10));
     localStorage.setItem('workingDays', JSON.stringify(checkedDays));
 }
 
 [startInput, endInput, workingHoursPerDayInput, ...workingDaysInputs].forEach((el) => {
     el.addEventListener('change', saveSettings);
+});
+
+// respond to preset changes
+presetSelect.addEventListener('change', () => {
+    applyPreset(presetSelect.value);
+    saveSettings();
 });
 
 loadSettings();

@@ -2,63 +2,67 @@
 
 <head>
     <title>Clockify Overtime Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-    <div>Hello Calculator</div>
-    <div>
-        <label for="api-key">API-Key</label>
-        <input id="api-key" type="text" />
-    </div>
-    <div>
-        <label for="start">Start</label>
-        <input id="start" type="date" />
-    </div>
-    <div>
-        <label for="end">End</label>
-        <input id="end" type="date" />
-    </div>
-    <div>
-        <label>Mon</label>
-        <input id="working-day-mon" type="checkbox" value="1" />
-        <label>Tue</label>
-        <input id="working-day-tue" type="checkbox" value="2" />
-        <label>Wed</label>
-        <input id="working-day-wed" type="checkbox" value="3"/>
-        <label>Thur</label>
-        <input id="working-day-thu" type="checkbox" value="4"/>
-        <label>Fri</label>
-        <input id="working-day-fri" type="checkbox" value="5"/>
-        <label>Sat</label>
-        <input id="working-day-sat" type="checkbox" value="6"/>
-        <label>Sun</label>
-        <input id="working-day-sun" type="checkbox" value="7"/>
-    </div>
-    <div>
-        <label for="working-hours-per-day">Working Hours / Day</label>
-        <input id="working-hours-per-day" type="number" />
-    </div>
+    <div class="glass">
+        <h2>Clockify Overtime</h2>
+        <div>
+            <label for="api-key">API-Key</label>
+            <input id="api-key" type="text" />
+        </div>
+        <div>
+            <label for="start">Start</label>
+            <input id="start" type="date" />
+        </div>
+        <div>
+            <label for="end">End</label>
+            <input id="end" type="date" />
+        </div>
+        <div>
+            <label for="working-days-preset">Working days</label>
+            <select id="working-days-preset">
+                <option value="mon-fri">Monday – Friday</option>
+                <option value="every-day">Every day</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+        <div id="custom-days">
+            <label><input id="working-day-mon" type="checkbox" value="1" /> Mon</label>
+            <label><input id="working-day-tue" type="checkbox" value="2" /> Tue</label>
+            <label><input id="working-day-wed" type="checkbox" value="3" /> Wed</label>
+            <label><input id="working-day-thu" type="checkbox" value="4" /> Thu</label>
+            <label><input id="working-day-fri" type="checkbox" value="5" /> Fri</label>
+            <label><input id="working-day-sat" type="checkbox" value="6" /> Sat</label>
+            <label><input id="working-day-sun" type="checkbox" value="7" /> Sun</label>
+        </div>
+        <div>
+            <label for="working-hours-per-day">Working Hours / Day</label>
+            <input id="working-hours-per-day" type="number" />
+        </div>
 
-    <button id="trigger-btn">calculate overtime</button>
+        <button id="trigger-btn">calculate overtime</button>
 
-    <div>
-        <label>Total work days:</label>
-        <p id="total-work-days"></p>
-    </div>
+        <div class="output">
+            <label>Total work days:</label>
+            <p id="total-work-days"></p>
+        </div>
 
-    <div>
-        <label>Total time to work:</label>
-        <p id="total-time-to-work"></p>
-    </div>
+        <div class="output">
+            <label>Total time to work:</label>
+            <p id="total-time-to-work"></p>
+        </div>
 
-    <div>
-        <label>Total hours worked:</label>
-        <p id="total-hours-worked"></p>
-    </div>
+        <div class="output">
+            <label>Total hours worked:</label>
+            <p id="total-hours-worked"></p>
+        </div>
 
-    <div>
-        <label>Overtime:</label>
-        <p id="overtime"></p>
+        <div class="output">
+            <label>Overtime:</label>
+            <p id="overtime"></p>
+        </div>
     </div>
 </body>
 
