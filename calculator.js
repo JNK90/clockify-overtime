@@ -5,8 +5,8 @@ const temporalRe = /PT(\d{1,2}H)?(\d{1,2}M)?(\d{1,2}S)?/;
 
 const triggerBtn = document.querySelector('#trigger-btn');
 triggerBtn.addEventListener('click', async () => {
-  await calculateOvertimeAsync();
-})
+    await calculateOvertimeAsync();
+});
 
 const apiKeyInput = document.querySelector('#api-key');
 let apiKey;
@@ -14,14 +14,53 @@ let apiKey;
 const startInput = document.querySelector('#start');
 const endInput = document.querySelector('#end');
 const workingDaysInputs = [
-  document.querySelector('#working-day-mon'),
-  document.querySelector('#working-day-tue'),
-  document.querySelector('#working-day-wed'),
-  document.querySelector('#working-day-thu'),
-  document.querySelector('#working-day-fri'),
-  document.querySelector('#working-day-sat'),
-  document.querySelector('#working-day-sun')];
+    document.querySelector('#working-day-mon'),
+    document.querySelector('#working-day-tue'),
+    document.querySelector('#working-day-wed'),
+    document.querySelector('#working-day-thu'),
+    document.querySelector('#working-day-fri'),
+    document.querySelector('#working-day-sat'),
+    document.querySelector('#working-day-sun'),
+];
 const workingHoursPerDayInput = document.querySelector('#working-hours-per-day');
+
+function loadSettings() {
+    const today = dayjs();
+    const startDefault = today.startOf('year');
+    const endDefault = today;
+    const workingHoursDefault = 7.6; // 38 hours per week
+    const defaultWorkingDays = [1, 2, 3, 4, 5]; // Mon-Fri
+
+    const storedStart = localStorage.getItem('start');
+    startInput.value = storedStart || startDefault.format('YYYY-MM-DD');
+
+    const storedEnd = localStorage.getItem('end');
+    endInput.value = storedEnd || endDefault.format('YYYY-MM-DD');
+
+    const storedHours = localStorage.getItem('workingHoursPerDay');
+    workingHoursPerDayInput.value = storedHours !== null ? storedHours : workingHoursDefault;
+
+    const storedDays = localStorage.getItem('workingDays');
+    const daysToCheck = storedDays ? JSON.parse(storedDays) : defaultWorkingDays;
+    workingDaysInputs.forEach((input) => {
+        const val = Number.parseInt(input.value, 10);
+        input.checked = daysToCheck.includes(val);
+    });
+}
+
+function saveSettings() {
+    localStorage.setItem('start', startInput.value);
+    localStorage.setItem('end', endInput.value);
+    localStorage.setItem('workingHoursPerDay', workingHoursPerDayInput.value);
+    const checkedDays = workingDaysInputs.filter((d) => d.checked).map((d) => Number.parseInt(d.value, 10));
+    localStorage.setItem('workingDays', JSON.stringify(checkedDays));
+}
+
+[startInput, endInput, workingHoursPerDayInput, ...workingDaysInputs].forEach((el) => {
+    el.addEventListener('change', saveSettings);
+});
+
+loadSettings();
 
 const totalWorkDaysOut = document.querySelector('#total-work-days');
 const totalTimeToWorkOut = document.querySelector('#total-time-to-work');
@@ -29,14 +68,16 @@ const totalHoursWorkedOut = document.querySelector('#total-hours-worked');
 const overtimeOut = document.querySelector('#overtime');
 
 async function calculateOvertimeAsync() {
+  saveSettings();
+
   apiKey = apiKeyInput.value;
   const start = dayjs(startInput.value);
   const end = endInput.value ? dayjs(endInput.value) : dayjs();
-  const workingDays = workingDaysInputs.filter(d => d.checked).map(d => Number.parseInt(d.value));
+  const workingDays = workingDaysInputs.filter((d) => d.checked).map((d) => Number.parseInt(d.value));
   const workingHoursPerDay = workingHoursPerDayInput.value;
 
   const totalWorkDays = getTotalWorkingDays(start, end, workingDays);
-  totalWorkDaysOut.innerText = totalWorkDays
+  totalWorkDaysOut.innerText = totalWorkDays;
 
   const totalTimeToWork = totalWorkDays * workingHoursPerDay;
   totalTimeToWorkOut.innerText = totalTimeToWork;
@@ -67,10 +108,10 @@ async function getClockifyTimesAsync(start, end, workspaceId, userId) {
   let page = 1;
   while (true) {
     const params = new URLSearchParams();
-    params.append("start", start.add(-1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
-    params.append("end", end.add(1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
-    params.append("page", page);
-    params.append("page-size", 200);
+    params.append('start', start.add(-1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
+    params.append('end', end.add(1, 'day').format('YYYY-MM-DDThh:mm:ssZ'));
+    params.append('page', page);
+    params.append('page-size', 200);
 
     const response = await fetch(`${apiUrl}/workspaces/${workspaceId}/user/${userId}/time-entries?${params}`, {
       headers: { 'x-api-key': apiKey },
@@ -79,7 +120,7 @@ async function getClockifyTimesAsync(start, end, workspaceId, userId) {
     if (pagedTimes.length === 0) {
       break;
     }
-    times.push(...pagedTimes.map((t) => t.timeInterval.duration ? calculateHours(t.timeInterval.duration) : 0));
+    times.push(...pagedTimes.map((t) => (t.timeInterval.duration ? calculateHours(t.timeInterval.duration) : 0)));
     page++;
   }
   return times;
