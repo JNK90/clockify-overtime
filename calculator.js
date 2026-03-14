@@ -129,7 +129,7 @@ async function calculateOvertimeAsync() {
     totalWorkDaysOut.innerText = totalWorkDays;
 
     const totalTimeToWork = totalWorkDays * workingHoursPerDay;
-    totalTimeToWorkOut.innerText = totalTimeToWork;
+    totalTimeToWorkOut.innerText = decimalToTime(totalTimeToWork);
 
     const { userId, workspaceId } = await getUserAndWorkspaceIdAsync();
 
@@ -138,10 +138,10 @@ async function calculateOvertimeAsync() {
         t.timeInterval.duration ? calculateHours(t.timeInterval.duration) : 0,
     );
     const totalHoursWorked = workingHours.reduce((a, b) => a + b, 0);
-    totalHoursWorkedOut.innerText = totalHoursWorked;
+    totalHoursWorkedOut.innerText = decimalToTime(totalHoursWorked);
 
     const overtime = totalHoursWorked - totalTimeToWork;
-    overtimeOut.innerText = overtime;
+    overtimeOut.innerText = decimalToTime(overtime);
 
     const usedHoliday = clockifyEntries.filter((t) => t.projectId === holidayProjectId);
     const usedHolidayHours = usedHoliday
@@ -211,4 +211,11 @@ function getTotalWorkingDays(start, end, daysOfWeek) {
     }
   }
   return numberOfWorkDays;
+}
+
+function decimalToTime(decimal) {
+    const seconds = decimal * 3600;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return `${h}h ${m}m`;
 }
