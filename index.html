@@ -54,6 +54,12 @@
         </div>
 
         <div class="output">
+            <label>Used Holiday (in days):</label>
+            <p id="holiday"></p>
+            <ul id="holiday-details"></ul>
+        </div>
+
+        <div class="output">
             <label>Total time to work:</label>
             <p id="total-time-to-work"></p>
         </div>
@@ -67,16 +73,17 @@
             <label>Overtime:</label>
             <p id="overtime"></p>
         </div>
+
         <div class="output">
-            <label>Used Holiday (in days):</label>
-            <p id="holiday"></p>
-            <ul id="holiday-details"></ul>
+            <label>Weekly summary:</label>
+            <ul id="weekly-summary"></ul>
         </div>
     </div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/weekday.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/isSameOrBefore.js"></script>
 <script src="calculator.js" type="module"></script>
 
 </html>

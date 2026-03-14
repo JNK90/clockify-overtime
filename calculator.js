@@ -1,4 +1,5 @@
 dayjs.extend(window.dayjs_plugin_weekday);
+dayjs.extend(window.dayjs_plugin_isSameOrBefore);
 
 const apiUrl = 'https://api.clockify.me/api/v1';
 const temporalRe = /PT(\d{1,2}H)?(\d{1,2}M)?(\d{1,2}S)?/;
@@ -115,6 +116,7 @@ const totalHoursWorkedOut = document.querySelector('#total-hours-worked');
 const overtimeOut = document.querySelector('#overtime');
 const holidayOut = document.querySelector('#holiday');
 const holidayDetailsOut = document.querySelector('#holiday-details');
+const weeklySummaryOut = document.querySelector('#weekly-summary');
 
 async function calculateOvertimeAsync() {
     saveSettings();
@@ -142,6 +144,48 @@ async function calculateOvertimeAsync() {
 
     const overtime = totalHoursWorked - totalTimeToWork;
     overtimeOut.innerText = decimalToTime(overtime);
+
+    // Weekly detail (week number - worked hours - overtime)
+    const weekMap = {};
+
+    for (let d = dayjs(start); d.isSameOrBefore(end, 'day'); d = d.add(1, 'day')) {
+        const weekNo = getIsoWeekNumber(d);
+        const weekKey = `${d.year()}-${String(weekNo).padStart(2, '0')}`;
+        if (!weekMap[weekKey]) {
+            weekMap[weekKey] = {
+                year: d.year(),
+                weekNo,
+                worked: 0,
+                targetDays: 0,
+            };
+        }
+        if (workingDays.includes(d.weekday())) {
+            weekMap[weekKey].targetDays++;
+        }
+    }
+
+    clockifyEntries.forEach((t) => {
+        if (!t.timeInterval?.start || !t.timeInterval?.duration) return;
+        const entryDate = dayjs(t.timeInterval.start);
+        if (entryDate.isBefore(start, 'day') || entryDate.isAfter(end, 'day')) return;
+        const weekNo = getIsoWeekNumber(entryDate);
+        const weekKey = `${entryDate.year()}-${String(weekNo).padStart(2, '0')}`;
+        if (!weekMap[weekKey]) {
+            weekMap[weekKey] = { year: entryDate.year(), weekNo, worked: 0, targetDays: 0 };
+        }
+        weekMap[weekKey].worked += calculateHours(t.timeInterval.duration);
+    });
+
+    const weeklyRows = Object.values(weekMap)
+        .sort((a, b) => a.year - b.year || a.weekNo - b.weekNo)
+        .map((w) => {
+            const target = w.targetDays * workingHoursPerDay;
+            const overtimeWeek = w.worked - target;
+            const workedText = decimalToTime(w.worked);
+            const overtimeText = decimalToTime(overtimeWeek);
+            return `<li>Week ${w.weekNo} - ${workedText}: ${overtimeText}</li>`;
+        });
+    weeklySummaryOut.innerHTML = weeklyRows.join('');
 
     const usedHoliday = clockifyEntries.filter((t) => t.projectId === holidayProjectId);
     const usedHolidayHours = usedHoliday
@@ -213,9 +257,20 @@ function getTotalWorkingDays(start, end, daysOfWeek) {
   return numberOfWorkDays;
 }
 
+function getIsoWeekNumber(date) {
+    const d = new Date(Date.UTC(date.year(), date.month(), date.date()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    return weekNo;
+}
+
 function decimalToTime(decimal) {
-    const seconds = decimal * 3600;
+    const sign = decimal < 0 ? '-' : '';
+    const absVal = Math.abs(decimal);
+    const seconds = absVal * 3600;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
-    return `${h}h ${m}m`;
+    return `${sign}${h}h ${m}m`;
 }
