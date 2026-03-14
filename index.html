@@ -41,6 +41,10 @@
             <label for="working-hours-per-day">Working Hours / Day</label>
             <input id="working-hours-per-day" type="number" />
         </div>
+        <div>
+            <label for="pto">PTO / Year</label>
+            <input id="pto" type="number" />
+        </div>
 
         <button id="trigger-btn">calculate overtime</button>
 
@@ -62,6 +66,11 @@
         <div class="output">
             <label>Overtime:</label>
             <p id="overtime"></p>
+        </div>
+        <div class="output">
+            <label>Used Holiday (in days):</label>
+            <p id="holiday"></p>
+            <ul id="holiday-details"></ul>
         </div>
     </div>
 </body>
