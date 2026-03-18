@@ -20,7 +20,7 @@ body {
     color: #000;
 }
 
-.glass input[type="text"],
+.glass input[type="password"],
 .glass input[type="date"],
 .glass input[type="number"],
 .glass select {
