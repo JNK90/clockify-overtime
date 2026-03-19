@@ -191,7 +191,8 @@ async function calculateOvertimeAsync() {
     const usedHolidayHours = usedHoliday
         .map((t) => (t.timeInterval.duration ? calculateHours(t.timeInterval.duration) : 0))
         .reduce((a, b) => a + b, 0);
-    holidayOut.innerText = usedHolidayHours / workingHoursPerDay;
+    const usedPto = usedHolidayHours / workingHoursPerDay;
+    holidayOut.innerText = `${usedPto} (${ptoInput.value - usedPto} left)`;
     holidayDetailsOut.innerHTML = usedHoliday
         .map(
             (t) =>
